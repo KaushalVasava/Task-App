@@ -4,9 +4,9 @@ import android.app.Application
 import android.content.Context
 import android.widget.Toast
 import androidx.room.Room
-import com.lahsuak.apps.mylist.data.TodoDatabase
-import com.lahsuak.apps.mylist.repository.TodoRepository
-import com.lahsuak.apps.mylist.repository.TodoRepositoryImpl
+import com.lahsuak.apps.mylist.data.db.TodoDatabase
+import com.lahsuak.apps.mylist.data.repository.TodoRepository
+import com.lahsuak.apps.mylist.data.repository.TodoRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +28,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTodoRepository(db:TodoDatabase):TodoRepository{
+    fun provideTodoRepository(db: TodoDatabase):TodoRepository{
         return TodoRepositoryImpl(db.dao)
     }
     fun notifyUser(context:Context,msg: String){

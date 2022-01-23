@@ -1,5 +1,6 @@
-package com.lahsuak.apps.mylist.ui
+package com.lahsuak.apps.mylist.ui.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Paint
 import android.view.LayoutInflater
@@ -10,23 +11,33 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.lahsuak.apps.mylist.R
-import com.lahsuak.apps.mylist.model.Task
+import com.lahsuak.apps.mylist.data.model.SubTask
+import com.lahsuak.apps.mylist.data.model.Task
+import java.util.ArrayList
 
-class TodoAdapter(
-    var mContext: Context,
-    var list: List<Task>,
-    var listener: TodoListener
+class SubTaskAdapter(
+    private var mContext: Context,
+    private var list: List<SubTask>,
+    private var listener: SubTaskListener
 ) :
-    RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
+    RecyclerView.Adapter<SubTaskAdapter.SubTaskViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateList(newList: ArrayList<SubTask>?) {
+        list = ArrayList()
+        (list as ArrayList<SubTask>).clear()
+        (list as ArrayList<SubTask>).addAll(newList!!)
+        notifyDataSetChanged()
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubTaskViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.todo_item, parent, false)
-        return TodoViewHolder(view)
+        return SubTaskViewHolder(view)
     }
 
 
-    override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SubTaskViewHolder, position: Int) {
         holder.title.text = list[position].title
 
         if (list[position].isDone) {
@@ -51,7 +62,7 @@ class TodoAdapter(
 
     }
 
-    class TodoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class SubTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.findViewById(R.id.title)
         val editOrDeleteBtn: ImageView = itemView.findViewById(R.id.delete)
         val checkBox: MaterialCheckBox = itemView.findViewById(R.id.checkbox)
@@ -64,8 +75,8 @@ class TodoAdapter(
 
 }
 
-interface TodoListener {
-    fun onItemClicked(position: Int, todo: Task)
+interface SubTaskListener {
+    fun onItemClicked(position: Int, subTask: SubTask)
     fun onDeleteClicked(id: Int,isDone: Boolean)
-    fun onCheckBoxClicked(position: Int, todo: Task, isChecked: Boolean, holder: TodoAdapter.TodoViewHolder)
+    fun onCheckBoxClicked(position: Int,subTask: SubTask,isChecked: Boolean,holder: SubTaskAdapter.SubTaskViewHolder)
 }

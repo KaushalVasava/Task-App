@@ -1,10 +1,8 @@
-package com.lahsuak.apps.mylist.model
+package com.lahsuak.apps.mylist.data.model
 
-import androidx.lifecycle.LiveData
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "sub_task_table")
 data class SubTask(

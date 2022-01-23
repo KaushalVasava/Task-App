@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Projects/Android Projects/MyList/app/src/main/res/drawable/background_edittext.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/MyList/app/src/main/res/drawable/background_toolbar.xml" value="0.19895833333333332" />
         <entry key="..\:/Projects/Android Projects/MyList/app/src/main/res/drawable/ic_delete.xml" value="0.19895833333333332" />
         <entry key="..\:/Projects/Android Projects/MyList/app/src/main/res/drawable/ic_todo.xml" value="0.13" />
         <entry key="..\:/Projects/Android Projects/MyList/app/src/main/res/layout/activity_main.xml" value="0.17864583333333334" />
@@ -11,6 +12,7 @@
         <entry key="..\:/Projects/Android Projects/MyList/app/src/main/res/layout/fragment_list.xml" value="0.17864583333333334" />
         <entry key="..\:/Projects/Android Projects/MyList/app/src/main/res/layout/rename_dialog.xml" value="0.2" />
         <entry key="..\:/Projects/Android Projects/MyList/app/src/main/res/layout/todo_item.xml" value="0.18" />
+        <entry key="..\:/Projects/Android Projects/MyList/app/src/main/res/menu/app_menu.xml" value="0.17864583333333334" />
       </map>
     </option>
   </component>

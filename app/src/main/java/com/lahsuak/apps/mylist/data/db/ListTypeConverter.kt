@@ -1,11 +1,10 @@
-package com.lahsuak.apps.mylist.data
+package com.lahsuak.apps.mylist.data.db
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.lahsuak.apps.mylist.model.SubTask
+import com.lahsuak.apps.mylist.data.model.SubTask
 import java.util.*
-import java.util.concurrent.Flow
 
 class ListTypeConverter {
     var gson: Gson = Gson()

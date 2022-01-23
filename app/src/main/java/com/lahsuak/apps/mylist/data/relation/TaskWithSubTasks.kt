@@ -2,9 +2,8 @@ package com.lahsuak.apps.mylist.data.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.lahsuak.apps.mylist.model.SubTask
-import com.lahsuak.apps.mylist.model.Task
-import kotlinx.coroutines.flow.Flow
+import com.lahsuak.apps.mylist.data.model.SubTask
+import com.lahsuak.apps.mylist.data.model.Task
 
 data class TaskWithSubTasks(
     @Embedded val task:Task,

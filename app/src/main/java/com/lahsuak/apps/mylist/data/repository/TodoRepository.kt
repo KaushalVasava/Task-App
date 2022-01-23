@@ -1,8 +1,7 @@
-package com.lahsuak.apps.mylist.repository
+package com.lahsuak.apps.mylist.data.repository
 
-import com.lahsuak.apps.mylist.data.relation.TaskWithSubTasks
-import com.lahsuak.apps.mylist.model.SubTask
-import com.lahsuak.apps.mylist.model.Task
+import com.lahsuak.apps.mylist.data.model.SubTask
+import com.lahsuak.apps.mylist.data.model.Task
 import kotlinx.coroutines.flow.Flow
 
 interface TodoRepository {
@@ -16,8 +15,10 @@ interface TodoRepository {
     fun getTodos(): Flow<List<Task>>
 
     suspend fun getById(id:Int):Task
-//    suspend fun getSubTask(id:Int):List<Todo>?
 
+    fun getCompletedTask(isDone:Boolean):Flow<List<Task>>
+
+    //subtask methods
     suspend fun insertSubTask(todo: SubTask)
 
     suspend fun deleteSubTask(todo: SubTask)
@@ -28,5 +29,6 @@ interface TodoRepository {
 
     suspend fun getBySubTaskId(id:Int):SubTask
 
-//    suspend fun getSubTasksOfTask(id:Int):List<SubTask>
+    fun getCompletedSubTask(isDone:Boolean):Flow<List<SubTask>>
+
 }

@@ -1,9 +1,8 @@
-package com.lahsuak.apps.mylist.data
+package com.lahsuak.apps.mylist.data.db
 
 import androidx.room.*
-import com.lahsuak.apps.mylist.data.relation.TaskWithSubTasks
-import com.lahsuak.apps.mylist.model.SubTask
-import com.lahsuak.apps.mylist.model.Task
+import com.lahsuak.apps.mylist.data.model.SubTask
+import com.lahsuak.apps.mylist.data.model.Task
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -23,6 +22,11 @@ interface TodoDao {
     @Query("SELECT * FROM TASK_TABLE WHERE id=:todoID")
     suspend fun getById(todoID: Int): Task
 
+    @Query("SELECT * FROM TASK_TABLE WHERE status=:isDone")
+    fun getCompletedTask(isDone:Boolean): Flow<List<Task>>
+
+    //subtask methods
+
     @Query("SELECT * FROM sub_task_table where id=:id")
     fun getAllSubTask(id: Int): Flow<List<SubTask>>
 
@@ -38,8 +42,6 @@ interface TodoDao {
     @Query("SELECT * FROM SUB_TASK_TABLE WHERE id=:subtaskID")
     suspend fun getBySubTaskId(subtaskID: Int): SubTask
 
-//    @Transaction
-//    @Query("SELECT subtask FROM task_table where id=:id")
-//    suspend fun getTaskBySubTasks(id:Int):List<SubTask>//TaskWithSubTasks>
-
+    @Query("SELECT * FROM SUB_TASK_TABLE WHERE status=:isDone")
+    fun getCompletedSubTask(isDone:Boolean): Flow<List<SubTask>>
 }

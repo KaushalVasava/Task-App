@@ -1,11 +1,9 @@
-package com.lahsuak.apps.mylist.repository
+package com.lahsuak.apps.mylist.data.repository
 
-import com.lahsuak.apps.mylist.data.TodoDao
-import com.lahsuak.apps.mylist.data.relation.TaskWithSubTasks
-import com.lahsuak.apps.mylist.model.SubTask
-import com.lahsuak.apps.mylist.model.Task
+import com.lahsuak.apps.mylist.data.db.TodoDao
+import com.lahsuak.apps.mylist.data.model.SubTask
+import com.lahsuak.apps.mylist.data.model.Task
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 
 class TodoRepositoryImpl(
     private val dao: TodoDao
@@ -30,9 +28,11 @@ class TodoRepositoryImpl(
     override suspend fun getById(id: Int): Task {
         return dao.getById(id)
     }
-//    override suspend fun getSubTask(id: Int): List<Todo>? {
-//        return dao.getSubTask(id)
-//    }
+
+    override fun getCompletedTask(isDone:Boolean): Flow<List<Task>> {
+        return dao.getCompletedTask(isDone)
+    }
+    //subtask methods
 
     override suspend fun insertSubTask(todo: SubTask) {
         dao.insertSubTask(todo)
@@ -54,8 +54,7 @@ class TodoRepositoryImpl(
         return dao.getBySubTaskId(id)
     }
 
-//    override suspend fun getSubTasksOfTask(id: Int): List<SubTask> {
-//       return dao.getTaskBySubTasks(id)
-//    }
-
+    override fun getCompletedSubTask(isDone: Boolean): Flow<List<SubTask>> {
+        return dao.getCompletedSubTask(isDone)
+    }
 }

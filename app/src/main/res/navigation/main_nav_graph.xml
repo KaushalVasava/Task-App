@@ -20,9 +20,6 @@
         android:label="{task_title}"
         tools:layout="@layout/fragment_add_update" >
         <argument
-            android:name="EditorNew"
-            app:argType="integer" />
-        <argument
             android:name="id"
             app:argType="integer" />
         <argument

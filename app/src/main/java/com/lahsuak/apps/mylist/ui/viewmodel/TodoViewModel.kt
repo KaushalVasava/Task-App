@@ -1,17 +1,20 @@
-package com.lahsuak.apps.mylist.ui
+package com.lahsuak.apps.mylist.ui.viewmodel
 
 import android.content.Context
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.lahsuak.apps.mylist.databinding.RenameDialogBinding
-import com.lahsuak.apps.mylist.model.Task
-import com.lahsuak.apps.mylist.repository.TodoRepository
+import com.lahsuak.apps.mylist.data.model.Task
+import com.lahsuak.apps.mylist.data.repository.TodoRepository
+import com.lahsuak.apps.mylist.di.AppModule
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class TodoViewModel  @ViewModelInject constructor(
@@ -19,18 +22,21 @@ class TodoViewModel  @ViewModelInject constructor(
 ): ViewModel() {
     val todos = repository.getTodos().asLiveData()
 
-    fun insert(todo: Task) = viewModelScope.launch(Dispatchers.IO) {
+    private fun insert(todo: Task) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertTodo(todo)
     }
 
     fun update(todo: Task) = viewModelScope.launch(Dispatchers.IO) {
         repository.updateTodo(todo)
     }
-    fun delete(todo: Task) = viewModelScope.launch(Dispatchers.IO) {
+    private fun delete(todo: Task) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteTodo(todo)
     }
     suspend fun getById(id: Int):Task {
         return repository.getById(id)
+    }
+    fun getCompletedTask(isDone: Boolean): LiveData<List<Task>> {
+       return repository.getCompletedTask(isDone).asLiveData()
     }
 
     fun showDeleteDialog(context: Context, isDone:Boolean,id: Int,list:ArrayList<Task>){
@@ -66,7 +72,6 @@ class TodoViewModel  @ViewModelInject constructor(
 
         val renameBinding = RenameDialogBinding.inflate(layoutInflater)
         val builder = MaterialAlertDialogBuilder(context)
-        //   renameBinding.input.requestFocus()
         builder.setView(renameBinding.root)
             .setTitle(title)
             .setPositiveButton(ok) { dialog, _ ->
@@ -78,7 +83,6 @@ class TodoViewModel  @ViewModelInject constructor(
                             val todo = getById(id)
                             todo.title = rename
                             update(todo)
-                            // adapter.notifyDataSetChanged()
                         }
                     } else {
                         val todo = Task(0,null,rename,false,)
@@ -86,7 +90,7 @@ class TodoViewModel  @ViewModelInject constructor(
                     }
                     dialog.dismiss()
                 } else {
-                    //
+                    AppModule.notifyUser(context,"Please enter title")
                 }
             }
             .setNegativeButton("Cancel") { dialog, _ ->
