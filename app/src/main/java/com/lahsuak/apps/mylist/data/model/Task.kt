@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class Task(
     @PrimaryKey(autoGenerate = true)
     val id:Int,
-    @ColumnInfo(name = "subtask") var subtask:List<SubTask>?,
     @ColumnInfo(name = "title") var title:String,
-    @ColumnInfo(name = "status") var isDone:Boolean
+    @ColumnInfo(name = "status") val isDone:Boolean = false,
+    @ColumnInfo(name = "importance") var isImp:Boolean = false
 )

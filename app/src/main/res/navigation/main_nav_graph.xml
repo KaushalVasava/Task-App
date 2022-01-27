@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_listFragment_to_addUpdateFragment"
             app:destination="@id/addUpdateFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addUpdateFragment"
@@ -26,4 +29,18 @@
             android:name="task_title"
             app:argType="string" />
     </fragment>
+    <dialog
+        android:id="@+id/deleteAllCompletedDialogFragment"
+        android:name="com.lahsuak.apps.mylist.ui.fragments.DeleteAllCompletedDialogFragment"
+        android:label="DeleteAllCompletedDialogFragment" />
+    <action android:id="@+id/action_global_deleteAllCompletedDialogFragment" app:destination="@id/deleteAllCompletedDialogFragment" />
+    <dialog
+        android:id="@+id/deleteAllCompletedDialogFragment2"
+        android:name="com.lahsuak.apps.mylist.ui.fragments.DeleteAllCompletedDialogFragment2"
+        android:label="DeleteAllCompletedDialogFragment2" />
+    <action android:id="@+id/action_global_deleteAllCompletedDialogFragment2" app:destination="@id/deleteAllCompletedDialogFragment2" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.lahsuak.apps.mylist.ui.fragments.SettingsFragment"
+        android:label="Settings" />
 </navigation>

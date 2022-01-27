@@ -1,5 +1,6 @@
 package com.lahsuak.apps.mylist.data.repository
 
+import com.lahsuak.apps.mylist.data.SortOrder
 import com.lahsuak.apps.mylist.data.model.SubTask
 import com.lahsuak.apps.mylist.data.model.Task
 import kotlinx.coroutines.flow.Flow
@@ -12,12 +13,17 @@ interface TodoRepository {
 
     suspend fun updateTodo(todo: Task)
 
-    fun getTodos(): Flow<List<Task>>
+    fun getAllTasks(
+        searchQuery: String,
+        sortOrder: SortOrder,
+        hideCompleted: Boolean
+    ): Flow<List<Task>>
 
-    suspend fun getById(id:Int):Task
+    suspend fun getById(id: Int): Task
 
-    fun getCompletedTask(isDone:Boolean):Flow<List<Task>>
+    suspend fun deleteAllCompletedTask()
 
+    suspend fun deleteAllTasks()
     //subtask methods
     suspend fun insertSubTask(todo: SubTask)
 
@@ -25,10 +31,14 @@ interface TodoRepository {
 
     suspend fun updateSubTask(todo: SubTask)
 
-    fun getSubTasks(id:Int): Flow<List<SubTask>>
+    fun getAllSubTasks(
+        id: Int,
+        query: String,
+        sortOrder: SortOrder,
+        hideCompleted: Boolean
+    ): Flow<List<SubTask>>
 
-    suspend fun getBySubTaskId(id:Int):SubTask
+    suspend fun deleteAllCompletedSubTask()
 
-    fun getCompletedSubTask(isDone:Boolean):Flow<List<SubTask>>
-
+    suspend fun deleteAllSubTasks(id: Int)
 }

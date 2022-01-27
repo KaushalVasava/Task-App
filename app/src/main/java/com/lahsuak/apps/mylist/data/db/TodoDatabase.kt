@@ -10,7 +10,7 @@ import com.lahsuak.apps.mylist.data.model.Task
     entities = [Task::class,SubTask::class],
     version = 1
 )
-@TypeConverters(ListTypeConverter::class)
+//@TypeConverters(ListTypeConverter::class)
 abstract class TodoDatabase: RoomDatabase() {
 
     abstract val dao: TodoDao

@@ -1,14 +1,25 @@
 package com.lahsuak.apps.mylist.data.db
 
 import androidx.room.*
+import com.lahsuak.apps.mylist.data.SortOrder
 import com.lahsuak.apps.mylist.data.model.SubTask
 import com.lahsuak.apps.mylist.data.model.Task
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDao {
-    @Query("SELECT * FROM task_table")
-    fun getAllTodos(): Flow<List<Task>>
+
+    fun getAllTasks(query: String, sortOrder: SortOrder, hideCompleted: Boolean): Flow<List<Task>> =
+        when (sortOrder) {
+            SortOrder.BY_DATE -> getAllTaskByDate(query, hideCompleted)
+            SortOrder.BY_NAME -> getAllTaskByName(query, hideCompleted)
+        }
+
+    @Query("SELECT * FROM task_table WHERE (status!= :hideCompleted OR status = 0) AND title LIKE '%' || :searchQuery || '%' ORDER BY importance DESC,title")
+    fun getAllTaskByName(searchQuery: String, hideCompleted: Boolean): Flow<List<Task>>
+
+    @Query("SELECT * FROM task_table WHERE (status!= :hideCompleted OR status = 0) AND title LIKE '%' || :searchQuery || '%' ORDER BY importance DESC,id DESC")
+    fun getAllTaskByDate(searchQuery: String, hideCompleted: Boolean): Flow<List<Task>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(note: Task)
@@ -22,13 +33,12 @@ interface TodoDao {
     @Query("SELECT * FROM TASK_TABLE WHERE id=:todoID")
     suspend fun getById(todoID: Int): Task
 
-    @Query("SELECT * FROM TASK_TABLE WHERE status=:isDone")
-    fun getCompletedTask(isDone:Boolean): Flow<List<Task>>
+    @Query("DELETE FROM TASK_TABLE WHERE status = 1")
+    suspend fun deleteAllCompletedTask()
 
+    @Query("DELETE FROM TASK_TABLE")
+    suspend fun deleteAllTask()
     //subtask methods
-
-    @Query("SELECT * FROM sub_task_table where id=:id")
-    fun getAllSubTask(id: Int): Flow<List<SubTask>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSubTask(task: SubTask)
@@ -39,9 +49,34 @@ interface TodoDao {
     @Update(onConflict = OnConflictStrategy.ABORT)
     suspend fun updateSubTask(task: SubTask)
 
-    @Query("SELECT * FROM SUB_TASK_TABLE WHERE id=:subtaskID")
-    suspend fun getBySubTaskId(subtaskID: Int): SubTask
+    fun getAllSubTasks(
+        id: Int,
+        query: String,
+        sortOrder: SortOrder,
+        hideCompleted: Boolean
+    ): Flow<List<SubTask>> =
+        when (sortOrder) {
+            SortOrder.BY_DATE -> getAllSubTaskByDate(id, query, hideCompleted)
+            SortOrder.BY_NAME -> getAllSubTaskByName(id, query, hideCompleted)
+        }
 
-    @Query("SELECT * FROM SUB_TASK_TABLE WHERE status=:isDone")
-    fun getCompletedSubTask(isDone:Boolean): Flow<List<SubTask>>
+    @Query("SELECT * FROM sub_task_table WHERE id=:id AND (isDone!= :hideCompleted OR isDone = 0) AND subTitle LIKE '%' || :searchQuery || '%' ORDER BY isImportant DESC,subTitle")
+    fun getAllSubTaskByName(
+        id: Int,
+        searchQuery: String,
+        hideCompleted: Boolean
+    ): Flow<List<SubTask>>
+
+    @Query("SELECT * FROM sub_task_table WHERE id=:id AND (isDone!= :hideCompleted OR isDone = 0) AND subTitle LIKE '%' || :searchQuery || '%' ORDER BY isImportant DESC,sId DESC")
+    fun getAllSubTaskByDate(
+        id: Int,
+        searchQuery: String,
+        hideCompleted: Boolean
+    ): Flow<List<SubTask>>
+
+    @Query("DELETE FROM sub_task_table WHERE isDone = 1")
+    suspend fun deleteAllCompletedSubTask()
+
+    @Query("DELETE FROM SUB_TASK_TABLE where id=:id")
+    suspend fun deleteAllSubTask(id: Int)
 }

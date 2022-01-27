@@ -1,8 +1,10 @@
 package com.lahsuak.apps.mylist.data.repository
 
+import com.lahsuak.apps.mylist.data.SortOrder
 import com.lahsuak.apps.mylist.data.db.TodoDao
 import com.lahsuak.apps.mylist.data.model.SubTask
 import com.lahsuak.apps.mylist.data.model.Task
+import com.lahsuak.apps.mylist.data.relation.TaskWithSubTasks
 import kotlinx.coroutines.flow.Flow
 
 class TodoRepositoryImpl(
@@ -21,16 +23,24 @@ class TodoRepositoryImpl(
         dao.update(todo)
     }
 
-    override fun getTodos(): Flow<List<Task>> {
-        return dao.getAllTodos()
+    override fun getAllTasks(
+        searchQuery: String,
+        sortOrder: SortOrder,
+        hideCompleted: Boolean
+    ): Flow<List<Task>> {
+        return dao.getAllTasks(searchQuery, sortOrder, hideCompleted)
     }
 
     override suspend fun getById(id: Int): Task {
         return dao.getById(id)
     }
 
-    override fun getCompletedTask(isDone:Boolean): Flow<List<Task>> {
-        return dao.getCompletedTask(isDone)
+    override suspend fun deleteAllCompletedTask() {
+        dao.deleteAllCompletedTask()
+    }
+
+    override suspend fun deleteAllTasks() {
+       dao.deleteAllTask()
     }
     //subtask methods
 
@@ -46,15 +56,20 @@ class TodoRepositoryImpl(
         dao.updateSubTask(todo)
     }
 
-    override fun getSubTasks(id:Int): Flow<List<SubTask>> {
-        return dao.getAllSubTask(id)
+    override fun getAllSubTasks(
+        id: Int,
+        query: String,
+        sortOrder: SortOrder,
+        hideCompleted: Boolean
+    ): Flow<List<SubTask>> {
+        return dao.getAllSubTasks(id, query, sortOrder, hideCompleted)
     }
 
-    override suspend fun getBySubTaskId(id:Int):SubTask {
-        return dao.getBySubTaskId(id)
+    override suspend fun deleteAllCompletedSubTask() {
+        dao.deleteAllCompletedSubTask()
     }
 
-    override fun getCompletedSubTask(isDone: Boolean): Flow<List<SubTask>> {
-        return dao.getCompletedSubTask(isDone)
+    override suspend fun deleteAllSubTasks(id: Int) {
+        dao.deleteAllSubTask(id)
     }
 }
