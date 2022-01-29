@@ -1,5 +1,7 @@
 package com.lahsuak.apps.mylist.util
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -10,6 +12,22 @@ import com.lahsuak.apps.mylist.BuildConfig
 import com.lahsuak.apps.mylist.R
 
 object Util {
+    val requestCode = System.currentTimeMillis().toInt()
+    const val CHANNEL_ID = "com.lahsuak.apps.mylist.notificationID"
+
+    fun createNotification(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            val name = "Reminder"
+            val desc = "Task Reminder"
+
+            val channel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH)
+            channel.description = desc
+
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
     //settings methods
     fun moreApp(context: Context) {
         try {

@@ -1,14 +1,18 @@
 package com.lahsuak.apps.mylist.ui.fragments
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.*
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.*
+import android.widget.Button
+import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,21 +30,28 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import com.lahsuak.apps.mylist.R
 import com.lahsuak.apps.mylist.data.SortOrder
 import com.lahsuak.apps.mylist.databinding.FragmentAddUpdateBinding
 import com.lahsuak.apps.mylist.databinding.RenameDialogBinding
 import com.lahsuak.apps.mylist.data.model.SubTask
 import com.lahsuak.apps.mylist.data.model.Task
+import com.lahsuak.apps.mylist.receiver.AlarmReceiver
+import com.lahsuak.apps.mylist.ui.MainActivity.Companion.isReceived
 import com.lahsuak.apps.mylist.ui.adapters.SubTaskAdapter
 import com.lahsuak.apps.mylist.ui.viewmodel.SubTaskViewModel
 import com.lahsuak.apps.mylist.ui.viewmodel.TaskViewModel
+import com.lahsuak.apps.mylist.util.Util.createNotification
 import com.lahsuak.apps.mylist.util.Util.notifyUser
+import com.lahsuak.apps.mylist.util.Util.requestCode
 import com.lahsuak.apps.mylist.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
 
 @AndroidEntryPoint
@@ -55,6 +66,7 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
     private lateinit var task: Task
     private lateinit var searchView: SearchView
     private var actionMode: ActionMode? = null
+    private val mCalendar = Calendar.getInstance()
 
     companion object {
         var selectedItem2: Array<Boolean>? = null
@@ -72,6 +84,7 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
         subTaskAdapter = SubTaskAdapter(requireContext(), this)
 
         setHasOptionsMenu(true)
+        createNotification(requireContext())
 
         viewLifecycleOwner.lifecycleScope.launch {
             task = model.getById(args.id)
@@ -168,8 +181,29 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
                 )
             }
         }
-    }
 
+        if (isReceived) {
+            Log.d("TAG", "onViewCreated: Alarm received")
+            binding.timerTxt.text = getString(R.string.add_date_time)
+            isReceived = false
+        }
+        binding.timerLayout.setOnClickListener {
+            reminderShow()
+        }
+        binding.cancelTimer.setOnClickListener {
+            cancelReminder()
+            binding.cancelTimer.visibility = View.GONE
+        }
+    }
+    private fun cancelReminder() {
+        val intent = Intent(requireActivity().baseContext, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireActivity().baseContext, requestCode, intent, 0
+        )
+        val alarmManager = requireActivity().getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+        binding.timerTxt.text= getString(R.string.add_date_time)
+    }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.app_menu, menu)
@@ -221,9 +255,9 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
     }
 
     private fun getAllText(): String {
-        var sendtxt: String=task.title.uppercase()+" :-"
+        var sendtxt: String = task.title.uppercase() + " :-"
         for (i in subTaskAdapter.currentList) {
-            sendtxt +="\n"+ i.subTitle
+            sendtxt += "\n" + i.subTitle
         }
         return sendtxt
     }
@@ -354,12 +388,6 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
             notifyUser(requireContext(), "Task is Empty")
         }
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        searchView.setOnQueryTextListener(null)
-    }
-
 
     private val callback = object : ActionMode.Callback {
         override fun onCreateActionMode(
@@ -496,4 +524,105 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
                 dialog.dismiss()
             }.show()
     }
+
+
+    private fun reminderShow() {
+
+        val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        val hour = formatter.format(mCalendar.time).substring(0, 2).trim()
+        val min = formatter.format(mCalendar.time).substring(3, 5).trim()
+
+        val materialTimePicker: MaterialTimePicker = MaterialTimePicker.Builder()
+            .setTitleText("SET TIME")
+            .setHour(hour.toInt())
+            .setMinute(min.toInt())
+            .setTimeFormat(TimeFormat.CLOCK_12H)
+            .build()
+
+        //DATE PICKER LOGIC
+        val dateListener =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                mCalendar.set(Calendar.YEAR, year)
+                mCalendar.set(Calendar.MONTH, monthOfYear)
+                mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                val df = SimpleDateFormat("DD MMM,yy hh:mm:ss a", Locale.getDefault())
+
+                materialTimePicker.show(requireActivity().supportFragmentManager, "TIME")
+                // dialog update the TextView accordingly
+                materialTimePicker.addOnPositiveButtonClickListener {
+                    val pickedHour: Int = materialTimePicker.hour
+                    val pickedMinute: Int = materialTimePicker.minute
+                    val formattedTime: String = when {
+                        pickedHour > 12 -> {
+                            if (pickedMinute < 10) {
+                                "${materialTimePicker.hour - 12}:0${materialTimePicker.minute} pm"
+                            } else {
+                                "${materialTimePicker.hour - 12}:${materialTimePicker.minute} pm"
+                            }
+                        }
+                        pickedHour == 12 -> {
+                            if (pickedMinute < 10) {
+                                "${materialTimePicker.hour}:0${materialTimePicker.minute} pm"
+                            } else {
+                                "${materialTimePicker.hour}:${materialTimePicker.minute} pm"
+                            }
+                        }
+                        pickedHour == 0 -> {
+                            if (pickedMinute < 10) {
+                                "${materialTimePicker.hour + 12}:0${materialTimePicker.minute} am"
+                            } else {
+                                "${materialTimePicker.hour + 12}:${materialTimePicker.minute} am"
+                            }
+                        }
+                        else -> {
+                            if (pickedMinute < 10) {
+                                "${materialTimePicker.hour}:0${materialTimePicker.minute} am"
+                            } else {
+                                "${materialTimePicker.hour}:${materialTimePicker.minute} am"
+                            }
+                        }
+                    }
+                    mCalendar.set(Calendar.HOUR_OF_DAY, pickedHour)
+                    mCalendar.set(Calendar.MINUTE, pickedMinute)
+                    mCalendar.set(Calendar.SECOND, 0)
+
+                    val time = df.format(mCalendar.time)
+                    binding.timerTxt.text = time
+                    binding.cancelTimer.visibility = View.VISIBLE
+                    // then update the preview TextView
+
+                    val intent = Intent(requireActivity().baseContext, AlarmReceiver::class.java)
+                    intent.putExtra("task", "${task.id},${task.title}")
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                    val pendingIntent = PendingIntent.getBroadcast(
+                        requireActivity().baseContext, requestCode, intent, 0
+                    )
+
+                    val alarmManager =
+                        requireActivity().getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+                    alarmManager.setExact(
+                        AlarmManager.RTC_WAKEUP,
+                        mCalendar.timeInMillis,//+ milliSeconds,
+                        pendingIntent
+                    )
+                }
+
+            }
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            dateListener,
+            mCalendar.get(Calendar.YEAR),
+            mCalendar.get(Calendar.MONTH),
+            mCalendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        searchView.setOnQueryTextListener(null)
+    }
+
 }

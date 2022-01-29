@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -20,21 +21,26 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.lahsuak.apps.mylist.R
 import com.lahsuak.apps.mylist.data.SortOrder
 import com.lahsuak.apps.mylist.data.model.SubTask
 import com.lahsuak.apps.mylist.databinding.FragmentListBinding
 import com.lahsuak.apps.mylist.data.model.Task
+import com.lahsuak.apps.mylist.ui.MainActivity.Companion.isWidgetClick
+import com.lahsuak.apps.mylist.ui.MainActivity.Companion.notificationId
 import com.lahsuak.apps.mylist.ui.MainActivity.Companion.shareTxt
 import com.lahsuak.apps.mylist.ui.adapters.TaskAdapter
 import com.lahsuak.apps.mylist.ui.viewmodel.TaskViewModel
 import com.lahsuak.apps.mylist.util.Util.notifyUser
 import com.lahsuak.apps.mylist.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 @AndroidEntryPoint
@@ -43,7 +49,7 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
     private lateinit var navController: NavController
     private val model: TaskViewModel by viewModels()
     private lateinit var taskAdapter: TaskAdapter
-    private lateinit var searchView: SearchView
+    private var searchView: SearchView? = null
     private var actionMode: ActionMode? = null
 
     companion object {
@@ -62,11 +68,19 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
         taskAdapter = TaskAdapter(requireContext(), this)
 
         setHasOptionsMenu(true)
+        // on below line we are creating a new bottom sheet dialog.
+        val dialog = BottomSheetDialog(requireContext())
+        val view1 = layoutInflater.inflate(R.layout.rename_dialog, null)
+        dialog.setCancelable(false)
+        dialog.setContentView(view1)
 
         navController = findNavController()
 
-        if(shareTxt!=null){
-             val task = Task(0, shareTxt!!,false,false)
+        if (isWidgetClick) {
+            model.addOrRenameDialog(requireContext(), true, null, -1, layoutInflater, taskAdapter)
+        }
+        if (shareTxt != null) {
+            val task = Task(0, shareTxt!!, false, false)
             model.addOrRenameDialog(requireContext(), true, task, -1, layoutInflater, taskAdapter)
         }
 
@@ -113,7 +127,6 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
             }
             binding.taskProgress.text = getString(R.string.task_progress, count, it.size)
         }
-
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             model.tasksEvent.collect { event ->
                 when (event) {
@@ -128,11 +141,11 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
                             ListFragmentDirections.actionGlobalDeleteAllCompletedDialogFragment()
                         navController.navigate(action)
                     }
-                    else -> {}
                 }
             }
         }
         binding.fab.setOnClickListener {
+            //  dialog.show()
             model.addOrRenameDialog(requireContext(), true, null, -1, layoutInflater, taskAdapter)
         }
         binding.soundTask.setOnClickListener {
@@ -152,6 +165,23 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
                 )
             }
         }
+        if (notificationId != -1) {
+            var t: Task? = null
+            this.viewLifecycleOwner.lifecycleScope.launch {
+                t = model.getById(notificationId)
+                withContext(Dispatchers.Main) {
+                    if (t != null) {
+                        val action =
+                            ListFragmentDirections.actionListFragmentToAddUpdateFragment(
+                                notificationId,
+                                t!!.title
+                            )
+                        navController.navigate(action)
+                    }
+                }
+            }
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -163,12 +193,12 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
         val pendingQuery = model.searchQuery.value
         if (pendingQuery != null && pendingQuery.isNotEmpty()) {
             searchItem.expandActionView()
-            searchView.setQuery(pendingQuery, false)
+            searchView!!.setQuery(pendingQuery, false)
         }
-        searchView.onQueryTextChanged {
+        searchView!!.onQueryTextChanged {
             model.searchQuery.value = it
         }
-        searchView.queryHint = "Search Task"
+        searchView!!.queryHint = "Search Task"
         viewLifecycleOwner.lifecycleScope.launch {
             menu.findItem(R.id.showTask).isChecked = model.preferencesFlow.first().hideCompleted
         }
@@ -236,8 +266,11 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
 
     override fun onDestroyView() {
         super.onDestroyView()
-        searchView.setOnQueryTextListener(null)
+        if (searchView != null)
+            searchView!!.setOnQueryTextListener(null)
         shareTxt = null
+        isWidgetClick = false
+        notificationId = -1
     }
 
     private val callback = object : ActionMode.Callback {

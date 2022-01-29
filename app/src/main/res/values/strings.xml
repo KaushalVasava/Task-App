@@ -50,5 +50,7 @@
     <string name="search">Search</string>
     <string name="select_all">Select all</string>
     <string name="delete">Delete</string>
+    <string name="add_date_time">Add date/time</string>
+    <string name="reminder">Reminder</string>
 
 </resources>

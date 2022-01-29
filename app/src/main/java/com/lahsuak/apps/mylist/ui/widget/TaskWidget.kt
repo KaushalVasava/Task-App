@@ -18,12 +18,15 @@ class TaskWidget : AppWidgetProvider() {
     ) {
         for (appWidgetId in appWidgetIds!!) {
             val intent = Intent(context, MainActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity (context, 0, intent, 0);
+            intent.putExtra("key", true)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-            val views = RemoteViews(context!!.packageName, R.layout.example_widget);
-            views.setOnClickPendingIntent(R.id.example_widget_button, pendingIntent);
+            val pendingIntent = PendingIntent.getActivity (context, 0, intent, 0)
+            val views = RemoteViews(context!!.packageName, R.layout.example_widget)
+            views.setOnClickPendingIntent(R.id.example_widget_button, pendingIntent)
 
-            appWidgetManager!!.updateAppWidget(appWidgetId, views);
+            appWidgetManager!!.updateAppWidget(appWidgetId, views)
+
         }
     }
 

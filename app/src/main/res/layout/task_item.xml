@@ -51,6 +51,7 @@
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/edit_delete_task"
             android:padding="5dp"
+            android:visibility="gone"
             android:layout_marginEnd="-5dp"
             android:src="@drawable/ic_copy"
             app:layout_constraintBottom_toBottomOf="parent"

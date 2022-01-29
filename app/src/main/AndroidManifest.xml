@@ -27,7 +27,9 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <receiver android:name=".ui.widget.TaskWidget">
+        <receiver android:name=".receiver.AlarmReceiver"/>
+        <receiver android:name=".ui.widget.TaskWidget"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

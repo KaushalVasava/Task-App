@@ -148,7 +148,6 @@ class TaskAdapter(private val context: Context, private val listener: TaskListen
         }
     }
 
-
     interface TaskListener {
         fun onItemClicked(task: Task, position: Int)
         fun onDeleteClicked(task: Task, position: Int)
