@@ -71,7 +71,7 @@ class TaskAdapter(private val context: Context, private val listener: TaskListen
                     if (position != RecyclerView.NO_POSITION) {
                         val task = getItem(position)
                         if (!is_in_action_mode) {
-                            listener.onDeleteClicked(task, position)
+                            listener.onDeleteClicked(task)
                         }
                     }
                 }
@@ -150,7 +150,7 @@ class TaskAdapter(private val context: Context, private val listener: TaskListen
 
     interface TaskListener {
         fun onItemClicked(task: Task, position: Int)
-        fun onDeleteClicked(task: Task, position: Int)
+        fun onDeleteClicked(task: Task)
         fun onCheckBoxClicked(task: Task, taskCompleted: Boolean)
         fun onAnyItemLongClicked(position: Int)
     }

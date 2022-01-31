@@ -69,7 +69,7 @@ class SubTaskAdapter(private val context: Context, private val listener: SubTask
                     if (position != RecyclerView.NO_POSITION) {
                         val subTask = getItem(position)
                         if (!is_in_action_mode2)
-                            listener.onDeleteClicked(subTask, position)
+                            listener.onDeleteClicked(subTask)
                     }
                 }
 
@@ -150,7 +150,7 @@ class SubTaskAdapter(private val context: Context, private val listener: SubTask
 
     interface SubTaskListener {
         fun onItemClicked(subTask: SubTask, position: Int)
-        fun onDeleteClicked(subTask: SubTask, position: Int)
+        fun onDeleteClicked(subTask: SubTask)
         fun onCheckBoxClicked(subTask: SubTask, taskCompleted: Boolean)
         fun onAnyItemLongClicked(position: Int)
     }

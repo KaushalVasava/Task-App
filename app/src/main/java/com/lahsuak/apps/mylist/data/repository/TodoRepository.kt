@@ -41,4 +41,6 @@ interface TodoRepository {
     suspend fun deleteAllCompletedSubTask()
 
     suspend fun deleteAllSubTasks(id: Int)
+
+    suspend fun getBySubTaskId(id: Int):SubTask
 }

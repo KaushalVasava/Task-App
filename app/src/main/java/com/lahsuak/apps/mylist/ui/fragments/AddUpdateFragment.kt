@@ -3,21 +3,15 @@ package com.lahsuak.apps.mylist.ui.fragments
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
-import android.graphics.Paint
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
@@ -28,18 +22,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.lahsuak.apps.mylist.R
 import com.lahsuak.apps.mylist.data.SortOrder
 import com.lahsuak.apps.mylist.databinding.FragmentAddUpdateBinding
-import com.lahsuak.apps.mylist.databinding.RenameDialogBinding
 import com.lahsuak.apps.mylist.data.model.SubTask
 import com.lahsuak.apps.mylist.data.model.Task
 import com.lahsuak.apps.mylist.receiver.AlarmReceiver
 import com.lahsuak.apps.mylist.ui.MainActivity.Companion.isReceived
+import com.lahsuak.apps.mylist.ui.MainActivity.Companion.notificationId
 import com.lahsuak.apps.mylist.ui.adapters.SubTaskAdapter
 import com.lahsuak.apps.mylist.ui.viewmodel.SubTaskViewModel
 import com.lahsuak.apps.mylist.ui.viewmodel.TaskViewModel
@@ -74,7 +67,6 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
         var is_in_action_mode2 = false
         var is_select_all2 = false
     }
-    //private var subList = mutableListOf<SubTask>()
 
     @SuppressLint("NotifyDataSetChanged", "QueryPermissionsNeeded")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -88,6 +80,23 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
 
         viewLifecycleOwner.lifecycleScope.launch {
             task = model.getById(args.id)
+            if (task.isImp) {
+                binding.isImp.isChecked = true
+            }
+            if (task.reminder != null) {
+                binding.timerTxt.text = task.reminder
+                binding.cancelTimer.visibility = View.VISIBLE
+            }
+            if (isReceived && task.reminder != null) {
+                if (notificationId == args.id) {
+                    binding.cancelTimer.visibility = View.GONE
+                    binding.timerTxt.text = getString(R.string.add_date_time)
+                    isReceived = false
+                    notificationId = -1
+                    task.reminder = null
+                    model.update(task)
+                }
+            }
         }
         navController = findNavController()
 
@@ -145,12 +154,12 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
             }
         }
         binding.addBtn.setOnClickListener {
-            addOrRenameDialog(
-                requireContext(),
+            val action = AddUpdateFragmentDirections.actionAddUpdateFragmentToRenameFragmentDialog(
                 true,
-                null,
-                -1
+                args.id,
+                null, -1
             )
+            navController.navigate(action)
         }
 
         val speakLauncher =
@@ -172,7 +181,6 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
             )
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH)
             if (intent.resolveActivity(requireActivity().packageManager) != null) {
-                //startActivityForResult(intent, 1)
                 speakLauncher.launch(intent)
             } else {
                 notifyUser(
@@ -182,11 +190,6 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
             }
         }
 
-        if (isReceived) {
-            Log.d("TAG", "onViewCreated: Alarm received")
-            binding.timerTxt.text = getString(R.string.add_date_time)
-            isReceived = false
-        }
         binding.timerLayout.setOnClickListener {
             reminderShow()
         }
@@ -194,16 +197,27 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
             cancelReminder()
             binding.cancelTimer.visibility = View.GONE
         }
+        binding.isImp.setOnCheckedChangeListener { _, isChecked ->
+            binding.isImp.isChecked = isChecked
+
+            task.isImp = isChecked
+            model.update(task)
+        }
     }
+
     private fun cancelReminder() {
         val intent = Intent(requireActivity().baseContext, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             requireActivity().baseContext, requestCode, intent, 0
         )
-        val alarmManager = requireActivity().getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+        val alarmManager =
+            requireActivity().getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(pendingIntent)
-        binding.timerTxt.text= getString(R.string.add_date_time)
+        binding.timerTxt.text = getString(R.string.add_date_time)
+        task.reminder = null
+        model.update(task)
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.app_menu, menu)
@@ -274,104 +288,33 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
                 actionMode!!.title = "${counter2}/${subTaskAdapter.currentList.size} Selected"
             }
         } else {
-            addOrRenameDialog(requireContext(), false, subTask, position)
+            val action = AddUpdateFragmentDirections.actionAddUpdateFragmentToRenameFragmentDialog(
+                true,
+                args.id,
+                subTask.subTitle,
+                subTask.sId
+            )
+            navController.navigate(action)
         }
     }
 
 
-    override fun onDeleteClicked(subTask: SubTask, position: Int) {
-        showDeleteDialog(requireContext(), subTask, position)
+    override fun onDeleteClicked(subTask: SubTask) {
+        if (subTask.isDone) {
+            subModel.showDeleteDialog(requireContext(), subTask)
+        } else {
+            val action = AddUpdateFragmentDirections.actionAddUpdateFragmentToRenameFragmentDialog(
+                true,
+                args.id,
+                subTask.subTitle,
+                subTask.sId
+            )
+            navController.navigate(action)
+        }
     }
 
     override fun onCheckBoxClicked(subTask: SubTask, taskCompleted: Boolean) {
         subModel.onSubTaskCheckedChanged(subTask, taskCompleted)
-    }
-
-    private fun showDeleteDialog(
-        context: Context,
-        subTask: SubTask,
-        position: Int
-    ) {
-        if (subTask.isDone) {
-            AlertDialog.Builder(context)
-                .setTitle("Delete?")
-                .setMessage("Do you want to delete?")
-                .setPositiveButton("Delete") { dialog, _ ->
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        subModel.deleteSubTask(subTask)
-                    }
-                    dialog.dismiss()
-                }
-                .setNegativeButton("Cancel") { dialog, _ ->
-                    dialog.dismiss()
-                }.show()
-        } else {
-            addOrRenameDialog(
-                context,
-                false,
-                subTask,
-                position
-            )
-        }
-    }
-
-    private fun addOrRenameDialog(
-        context: Context,
-        isNew: Boolean,
-        subTask: SubTask?,
-        position: Int,
-    ) {
-        val title: String
-        val ok: String
-        if (isNew) {
-            title = "New Task"
-            ok = "Add"
-        } else {
-            title = "Edit Task"
-            ok = "Rename"
-        }
-
-        val renameBinding = RenameDialogBinding.inflate(layoutInflater)
-        val builder = MaterialAlertDialogBuilder(context)
-        var imp = false
-        var isChanged = false
-        if (subTask != null) {
-            renameBinding.impTask.isChecked = subTask.isImportant
-            renameBinding.renameText.setText(subTask.subTitle)
-        }
-        renameBinding.impTask.setOnCheckedChangeListener { _, isChecked ->
-            imp = isChecked
-            isChanged = true
-        }
-        builder.setView(renameBinding.root)
-            .setTitle(title)
-            .setPositiveButton(ok) { dialog, _ ->
-                val rename = renameBinding.renameText.text.toString()
-                if (rename.isNotEmpty()) {
-                    //rename title
-                    if (!isNew) {
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            subTask!!.subTitle = rename.trim()
-                            if (isChanged)
-                                subTask.isImportant = imp
-                            subModel.updateSubTask(subTask)
-                            subTaskAdapter.notifyItemChanged(position)
-                        }
-                    } else {
-                        val subTask1 = SubTask(args.id, rename.trim(), false, imp, 0)
-                        subModel.insertSubTask(subTask1)
-                        val task1 = Task(args.id, task.title, task.isDone, task.isImp)
-                        model.update(task1)
-                    }
-                    dialog.dismiss()
-                } else {
-                    notifyUser(context, "Please enter title")
-                }
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
     }
 
     private fun shareTask(text: String?) {
@@ -529,60 +472,37 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
     private fun reminderShow() {
 
         val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        val am_pm = formatter.format(mCalendar.time).substringAfter(" ")
         val hour = formatter.format(mCalendar.time).substring(0, 2).trim()
         val min = formatter.format(mCalendar.time).substring(3, 5).trim()
 
+        val h: Int
+        if (am_pm == "pm")
+            h = hour.toInt() + 12
+        else
+            h = hour.toInt()
         val materialTimePicker: MaterialTimePicker = MaterialTimePicker.Builder()
             .setTitleText("SET TIME")
-            .setHour(hour.toInt())
+            .setHour(h)
             .setMinute(min.toInt())
-            .setTimeFormat(TimeFormat.CLOCK_12H)
+            .setTimeFormat(TimeFormat.CLOCK_24H)
             .build()
 
         //DATE PICKER LOGIC
         val dateListener =
-            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                 mCalendar.set(Calendar.YEAR, year)
                 mCalendar.set(Calendar.MONTH, monthOfYear)
                 mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-                val df = SimpleDateFormat("DD MMM,yy hh:mm:ss a", Locale.getDefault())
+                val df = SimpleDateFormat("DD MMM,yy hh:mm a", Locale.getDefault())
 
                 materialTimePicker.show(requireActivity().supportFragmentManager, "TIME")
                 // dialog update the TextView accordingly
                 materialTimePicker.addOnPositiveButtonClickListener {
                     val pickedHour: Int = materialTimePicker.hour
                     val pickedMinute: Int = materialTimePicker.minute
-                    val formattedTime: String = when {
-                        pickedHour > 12 -> {
-                            if (pickedMinute < 10) {
-                                "${materialTimePicker.hour - 12}:0${materialTimePicker.minute} pm"
-                            } else {
-                                "${materialTimePicker.hour - 12}:${materialTimePicker.minute} pm"
-                            }
-                        }
-                        pickedHour == 12 -> {
-                            if (pickedMinute < 10) {
-                                "${materialTimePicker.hour}:0${materialTimePicker.minute} pm"
-                            } else {
-                                "${materialTimePicker.hour}:${materialTimePicker.minute} pm"
-                            }
-                        }
-                        pickedHour == 0 -> {
-                            if (pickedMinute < 10) {
-                                "${materialTimePicker.hour + 12}:0${materialTimePicker.minute} am"
-                            } else {
-                                "${materialTimePicker.hour + 12}:${materialTimePicker.minute} am"
-                            }
-                        }
-                        else -> {
-                            if (pickedMinute < 10) {
-                                "${materialTimePicker.hour}:0${materialTimePicker.minute} am"
-                            } else {
-                                "${materialTimePicker.hour}:${materialTimePicker.minute} am"
-                            }
-                        }
-                    }
+
                     mCalendar.set(Calendar.HOUR_OF_DAY, pickedHour)
                     mCalendar.set(Calendar.MINUTE, pickedMinute)
                     mCalendar.set(Calendar.SECOND, 0)
@@ -590,15 +510,15 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
                     val time = df.format(mCalendar.time)
                     binding.timerTxt.text = time
                     binding.cancelTimer.visibility = View.VISIBLE
-                    // then update the preview TextView
 
                     val intent = Intent(requireActivity().baseContext, AlarmReceiver::class.java)
                     intent.putExtra("task", "${task.id},${task.title}")
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                     val pendingIntent = PendingIntent.getBroadcast(
-                        requireActivity().baseContext, requestCode, intent, 0
+                        requireActivity().baseContext, task.id, intent, 0
                     )
+                    Log.d("TAG", "reminderShow: ${task.id} and ${task.title},$time")
 
                     val alarmManager =
                         requireActivity().getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
@@ -607,6 +527,10 @@ class AddUpdateFragment : Fragment(R.layout.fragment_add_update), SubTaskAdapter
                         mCalendar.timeInMillis,//+ milliSeconds,
                         pendingIntent
                     )
+
+                    // then update the task
+                    task.reminder = time
+                    model.update(task)
                 }
 
             }

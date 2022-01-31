@@ -72,4 +72,8 @@ class TodoRepositoryImpl(
     override suspend fun deleteAllSubTasks(id: Int) {
         dao.deleteAllSubTask(id)
     }
+
+    override suspend fun getBySubTaskId(id: Int): SubTask {
+        return dao.getBySubTaskId(id)
+    }
 }

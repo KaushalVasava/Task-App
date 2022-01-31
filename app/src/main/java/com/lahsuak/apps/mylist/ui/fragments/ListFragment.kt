@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -21,11 +20,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.lahsuak.apps.mylist.R
 import com.lahsuak.apps.mylist.data.SortOrder
-import com.lahsuak.apps.mylist.data.model.SubTask
 import com.lahsuak.apps.mylist.databinding.FragmentListBinding
 import com.lahsuak.apps.mylist.data.model.Task
 import com.lahsuak.apps.mylist.ui.MainActivity.Companion.isWidgetClick
@@ -59,8 +56,6 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
         var is_select_all = false
     }
 
-    //private var todoList = mutableListOf<Task>()
-
     @SuppressLint("NotifyDataSetChanged", "QueryPermissionsNeeded")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,20 +63,13 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
         taskAdapter = TaskAdapter(requireContext(), this)
 
         setHasOptionsMenu(true)
-        // on below line we are creating a new bottom sheet dialog.
-        val dialog = BottomSheetDialog(requireContext())
-        val view1 = layoutInflater.inflate(R.layout.rename_dialog, null)
-        dialog.setCancelable(false)
-        dialog.setContentView(view1)
 
         navController = findNavController()
 
-        if (isWidgetClick) {
-            model.addOrRenameDialog(requireContext(), true, null, -1, layoutInflater, taskAdapter)
-        }
         if (shareTxt != null) {
-            val task = Task(0, shareTxt!!, false, false)
-            model.addOrRenameDialog(requireContext(), true, task, -1, layoutInflater, taskAdapter)
+            val action = ListFragmentDirections.actionListFragmentToRenameFragmentDialog(false
+            ,-1, shareTxt!!)
+            navController.navigate(action)
         }
 
         binding.apply {
@@ -113,7 +101,7 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
                 if (result.resultCode == Activity.RESULT_OK) {
                     val data = result.data
                     val result1 = data!!.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                    val task = Task(0, result1!![0], isDone = false, false)
+                    val task = Task(0, result1!![0], isDone = false, false,null)
                     model.insert(task)
                 }
             }
@@ -144,9 +132,10 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
                 }
             }
         }
+
         binding.fab.setOnClickListener {
-            //  dialog.show()
-            model.addOrRenameDialog(requireContext(), true, null, -1, layoutInflater, taskAdapter)
+          val action = ListFragmentDirections.actionListFragmentToRenameFragmentDialog(false,-1,null)
+          navController.navigate(action)
         }
         binding.soundTask.setOnClickListener {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -166,7 +155,7 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
             }
         }
         if (notificationId != -1) {
-            var t: Task? = null
+            var t: Task?
             this.viewLifecycleOwner.lifecycleScope.launch {
                 t = model.getById(notificationId)
                 withContext(Dispatchers.Main) {
@@ -260,17 +249,17 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
         model.onTaskCheckedChanged(task, taskCompleted)
     }
 
-    override fun onDeleteClicked(task: Task, position: Int) {
-        model.showDeleteDialog(requireContext(), task, position, taskAdapter)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        if (searchView != null)
-            searchView!!.setOnQueryTextListener(null)
-        shareTxt = null
-        isWidgetClick = false
-        notificationId = -1
+    override fun onDeleteClicked(task: Task) {
+        if(task.isDone){
+            model.showDeleteDialog(requireContext(),task)
+        }else {
+            val action = ListFragmentDirections.actionListFragmentToRenameFragmentDialog(
+                false,
+                task.id,
+                task.title
+            )
+            navController.navigate(action)
+        }
     }
 
     private val callback = object : ActionMode.Callback {
@@ -375,7 +364,6 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
             is_in_action_mode = true
             binding.soundTask.visibility = View.GONE
             binding.fab.visibility = View.GONE
-            //  taskAdapter.notifyDataSetChanged()
         } else {
             is_in_action_mode = false
             is_select_all = false
@@ -410,4 +398,11 @@ class ListFragment : Fragment(R.layout.fragment_list), TaskAdapter.TaskListener 
             }.show()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (searchView != null)
+            searchView!!.setOnQueryTextListener(null)
+        shareTxt = null
+        isWidgetClick = false
+    }
 }

@@ -26,6 +26,10 @@
 
                 <data android:mimeType="text/plain" />
             </intent-filter>
+            <nav-graph android:value="@navigation/main_nav_graph" />
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts"/>
         </activity>
         <receiver android:name=".receiver.AlarmReceiver"/>
         <receiver android:name=".ui.widget.TaskWidget"

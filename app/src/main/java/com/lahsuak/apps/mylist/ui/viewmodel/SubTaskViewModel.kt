@@ -1,11 +1,14 @@
 package com.lahsuak.apps.mylist.ui.viewmodel
 
+import android.content.Context
+import androidx.appcompat.app.AlertDialog
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.lahsuak.apps.mylist.data.PreferenceManager
 import com.lahsuak.apps.mylist.data.SortOrder
 import com.lahsuak.apps.mylist.data.model.SubTask
+import com.lahsuak.apps.mylist.data.model.Task
 import com.lahsuak.apps.mylist.data.repository.TodoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -84,5 +87,26 @@ class SubTaskViewModel @ViewModelInject constructor(
 
     fun deleteAllSubTasks(id: Int) =viewModelScope.launch(Dispatchers.IO){
         repository.deleteAllSubTasks(id)
+    }
+
+    suspend fun getBySubTaskId(id: Int): SubTask {
+        return repository.getBySubTaskId(id)
+    }
+    fun showDeleteDialog(
+        context: Context,
+        subTask: SubTask
+    ) {
+        AlertDialog.Builder(context)
+            .setTitle("Delete?")
+            .setMessage("Do you want to delete?")
+            .setPositiveButton("Delete") { dialog, _ ->
+                viewModelScope.launch {
+                    deleteSubTask(subTask)
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }.show()
     }
 }
