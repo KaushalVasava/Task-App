@@ -1,5 +1,6 @@
 # MyList
 It is a todo list app using navigation components, MVVM, dependency injection.
+
 ![ic_playstore_github](https://user-images.githubusercontent.com/49050597/152676965-a4525ef0-e8c0-4549-a006-07831d70aaf2.png)
 
 
