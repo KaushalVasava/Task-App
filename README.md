@@ -23,7 +23,8 @@ Following android component you can learn:
 - View binding and databinding
 
 
-Click here to support me : 
+Click here to support me :
+
 [![playstore_logo (1)](https://user-images.githubusercontent.com/49050597/144359511-fd4cc136-3d9f-45d5-8598-506a45f8d170.png)]( https://play.google.com/store/apps/details?id=com.lahsuak.apps.mytask)
 
 ![image3](https://user-images.githubusercontent.com/49050597/213434493-e6034fc4-1525-45e4-8204-70204cdc001f.jpeg)
