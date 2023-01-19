@@ -21,7 +21,8 @@ Following android component you can learn:
 - Flows
 - Dependency Injection using Dagger-Hilt
 - View binding and databinding
-
+- Coroutine
+- App Language translation
 
 Click here to support me :
 
