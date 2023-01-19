@@ -15,7 +15,7 @@ Following android component you can learn:
 - Room database
 - DiffUtil in recyclerview
 - MVVM architecture
-- SharedPreference
+- SharedPreference, Preference DataStore Api
 - Alarm Manager for scheduling reminders 
 - Broadcast receiver 
 - Flows
@@ -33,5 +33,7 @@ Following android component you can learn:
 
 
 Author: Kaushal Vasava
+
 Thank you
+
 Support and share my profile :)
