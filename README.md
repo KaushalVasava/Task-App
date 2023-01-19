@@ -1,11 +1,10 @@
 # Task App
 It is a todo list app using navigation components, MVVM, dependency injection.
 
-![ic_playstore_github](https://user-images.githubusercontent.com/49050597/152676965-a4525ef0-e8c0-4549-a006-07831d70aaf2.png)
+![ic_playstore_github](ht![image9 (1)](https://user-images.githubusercontent.com/49050597/213434389-6ff8736b-fc26-4f16-8f81-622cc2f13bec.jpeg)![image5](https://user-images.githubusercontent.com/49050597/213434387-3300d744-bc31-4e32-9c17-8db0495c6b3d.jpeg)![image9 (2)](https://user-images.githubusercontent.com/49050597/213434392-6776b920-bfcf-4598-af4e-61603b44f2b2.jpeg)
+![image9 (3)](https://user-images.githubusercontent.com/49050597/213434393-3130afa4-bdc8-43a0-8b50-7fa4b1aad82d.jpeg)
+![image9 (4)](https://user-images.githubusercontent.com/49050597/213434397-487ed441-771b-4828-a2a6-05a3459a75f2.jpeg)
 
 
-![image1](https://user-images.githubusercontent.com/49050597/152676948-94a887d3-209b-41e3-9a6d-9abd61eaffd3.jpeg)
-![image2](https://user-images.githubusercontent.com/49050597/152676949-cb16ab44-40f5-4296-88bb-975083f9da70.jpeg)
-![image3](https://user-images.githubusercontent.com/49050597/152676950-4b4b2b86-db3b-4955-9043-2ee7f21aed8f.jpeg)
-![image4](https://user-images.githubusercontent.com/49050597/152676952-8a30fac9-5cfe-48fa-94f5-9c3967b4c865.jpeg)
-![image5](https://user-images.githubusercontent.com/49050597/152676953-cbd92613-cfd7-449e-8f87-4122827ff220.jpeg)
+
+![image3](https://user-images.githubusercontent.com/49050597/213434382-e19969d8-b3a7-49ff-8acb-0f95d73d883f.jpeg)
