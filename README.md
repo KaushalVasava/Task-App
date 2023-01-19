@@ -19,7 +19,7 @@ MVVM architecture
 SharedPreference
 Glide library for image load
 
-[![playstore_logo (1)](https://user-images.githubusercontent.com/49050597/144359511-fd4cc136-3d9f-45d5-8598-506a45f8d170.png)](https://play.google.com/store/apps/details?id=com.lasuak.mytasks)
+[![playstore_logo (1)](https://user-images.githubusercontent.com/49050597/144359511-fd4cc136-3d9f-45d5-8598-506a45f8d170.png)](https://play.google.com/store/apps/details?id=com.lasuak.apps.mytask)
 
 ![image3](https://user-images.githubusercontent.com/49050597/213434493-e6034fc4-1525-45e4-8204-70204cdc001f.jpeg)
 ![image5](https://user-images.githubusercontent.com/49050597/213434498-392260c4-c594-4122-a5ff-163fefffa635.jpeg)
