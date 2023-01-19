@@ -1,5 +1,5 @@
 # Task App
-It is a todo list app using navigation components, MVVM, dependency injection.
+It is a task/to-do list application using navigation components, Preference datastore, flows, Room database, MVVM, dependency injection.
 
 Features:
 - Create task and its subtasks
