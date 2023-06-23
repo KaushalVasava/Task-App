@@ -3,22 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@id/listFragment">
+    app:startDestination="@id/taskFragment">
 
     <fragment
-        android:id="@+id/listFragment"
-        android:name="com.lahsuak.apps.mylist.ui.fragments.ListFragment"
+        android:id="@+id/taskFragment"
+        android:name="com.lahsuak.apps.mylist.ui.fragments.TaskFragment"
         android:label="@string/app_name"
-        tools:layout="@layout/fragment_list" >
+        tools:layout="@layout/fragment_task" >
         <action
-            android:id="@+id/action_listFragment_to_addUpdateFragment"
-            app:destination="@id/addUpdateFragment" />
+            android:id="@+id/action_taskFragment_to_subTaskFragment"
+            app:destination="@id/subTaskFragment" />
     </fragment>
     <fragment
-        android:id="@+id/addUpdateFragment"
-        android:name="com.lahsuak.apps.mylist.ui.fragments.AddUpdateFragment"
+        android:id="@+id/subTaskFragment"
+        android:name="com.lahsuak.apps.mylist.ui.fragments.SubTaskFragment"
         android:label="{task_title}"
-        tools:layout="@layout/fragment_add_update" >
+        tools:layout="@layout/fragment_subtask" >
         <argument
             android:name="EditorNew"
             app:argType="integer" />
