@@ -4,35 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    android:background="@drawable/background_edittext"
-    >
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    android:background="@drawable/background_edittext">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/txt_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:text="Title"
         android:textColor="?attr/colorOnSecondary"
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/delete"
+        app:layout_constraintEnd_toStartOf="@id/btn_delete"
         app:layout_constraintStart_toEndOf="@id/checkbox"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Title" />
 
     <ImageView
-        android:id="@+id/delete"
+        android:id="@+id/btn_delete"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:contentDescription="Delete"
+        android:contentDescription="@string/delete"
         android:padding="5dp"
         android:src="@drawable/ic_edit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/title"
+        app:layout_constraintStart_toEndOf="@id/txt_title"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
@@ -42,9 +42,8 @@
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:padding="10dp"
-        android:tooltipText="Priority"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/title"
+        app:layout_constraintEnd_toStartOf="@id/txt_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,12 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.R
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.lahsuak.apps.mylist.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
-const val NEW_TASK = 1
 const val EDIT_TASK = 2
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

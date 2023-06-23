@@ -1,6 +1,5 @@
 package com.lahsuak.apps.mylist.repository
 
-import com.lahsuak.apps.mylist.data.relation.TaskWithSubTasks
 import com.lahsuak.apps.mylist.model.SubTask
 import com.lahsuak.apps.mylist.model.Task
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +15,6 @@ interface TodoRepository {
     fun getTodos(): Flow<List<Task>>
 
     suspend fun getById(id:Int):Task
-//    suspend fun getSubTask(id:Int):List<Todo>?
 
     suspend fun insertSubTask(todo: SubTask)
 
@@ -27,6 +25,4 @@ interface TodoRepository {
     fun getSubTasks(id:Int): Flow<List<SubTask>>
 
     suspend fun getBySubTaskId(id:Int):SubTask
-
-//    suspend fun getSubTasksOfTask(id:Int):List<SubTask>
 }
