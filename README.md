@@ -33,7 +33,7 @@ Make a reminder of your task or tasks or to-do list and get notified whenever yo
 - DiffUtil in recyclerview
 - MVVM architecture
 - SharedPreference, Preference DataStore Api
-- Alarm Manager for scheduling reminders 
+- Work Manager for scheduling reminders 
 - Broadcast receiver 
 - Flows
 - Dependency Injection using Dagger-Hilt
