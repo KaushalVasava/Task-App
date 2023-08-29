@@ -43,21 +43,28 @@ Make a reminder of your task or tasks or to-do list and get notified whenever yo
 
 # Click here to support me :
 
-[![playstore_logo (1)](https://user-images.githubusercontent.com/49050597/144359511-fd4cc136-3d9f-45d5-8598-506a45f8d170.png)]( https://play.google.com/store/apps/details?id=com.lahsuak.apps.tasks)
+[![playstore_icon (1) (1)](https://github.com/KaushalVasava/Task-App/assets/49050597/af96edf8-965c-4146-a8f4-c14d0359ec26)](https://play.google.com/store/apps/details?id=com.lahsuak.apps.tasks)
 
-![1 (1)](https://github.com/KaushalVasava/Task-App/assets/49050597/29feb2c9-368d-421b-a32a-591b161b44ba)
-![TASKS (2)](https://github.com/KaushalVasava/Task-App/assets/49050597/2b9d6a4d-3763-4b1c-bd65-68615cfe5748)
-![7](https://github.com/KaushalVasava/Task-App/assets/49050597/7143d5ee-3083-4582-8ba7-570d4466bc01)
-![6](https://github.com/KaushalVasava/Task-App/assets/49050597/99a5256e-276a-41ca-b056-2e9e8e75cbba)
-![5](https://github.com/KaushalVasava/Task-App/assets/49050597/e628d054-fbc7-46b3-9231-356ba2bb8bdc)
-![4](https://github.com/KaushalVasava/Task-App/assets/49050597/fc999d45-86dc-46d2-aa4d-814a939972e3)
-![3](https://github.com/KaushalVasava/Task-App/assets/49050597/e19eaac3-deee-4347-ac54-a4fcadc0e69b)
-![2](https://github.com/KaushalVasava/Task-App/assets/49050597/ab362ddb-74f0-4093-8101-065270096b1a)
+![5](https://github.com/KaushalVasava/Task-App/assets/49050597/f0c78a9d-69f8-41ff-b520-4adb8f3f060f)
+![6](https://github.com/KaushalVasava/Task-App/assets/49050597/18750d79-9921-48fe-b7b0-fe76edb1e8fc)
 
 
-Author: Kaushal Vasava
+# Contribution
+You can contribute this project. Just Solve issue or update code and raise PR. I'll do code review and merge your changes into main branch. See Commit message guidelines https://initialcommit.com/blog/git-commit-messages-best-practices
 
-Thank you
+# Licence
+Copyright 2023 Kaushal Vasava
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+# Author
+Kaushal Vasava
+
+# Thank you
 Contact us if you have any query on LinkedIn, Github, Twitter or
 Email: kaushalvasava.app.feedback@gmail.com
 and Instagram: https://www.instagram.com/kaushalvasava_apps/
