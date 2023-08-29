@@ -46,7 +46,7 @@ Make a reminder of your task or tasks or to-do list and get notified whenever yo
 [![playstore_icon (1) (1)](https://github.com/KaushalVasava/Task-App/assets/49050597/8c80e9b8-8fcf-433a-a484-891393252f93)](https://play.google.com/store/apps/details?id=com.lasuak.musicplayer)
 
 
-[![playstore_logo (1)](https://user-images.githubusercontent.com/49050597/144359511-fd4cc136-3d9f-45d5-8598-506a45f8d170.png)](https://play.google.com/store/apps/details?id=com.lasuak.musicplayer)
+[![playstore_logo (1)](https://user-images.githubusercontent.com/49050597/144359511-fd4cc136-3d9f-45d5-8598-506a45f8d170.png)](https://play.google.com/store/apps/details?id=com.lahsuak.apps.tasks)
 
 
 ![5](https://github.com/KaushalVasava/Task-App/assets/49050597/f0c78a9d-69f8-41ff-b520-4adb8f3f060f)
